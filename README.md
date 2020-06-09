@@ -24,7 +24,7 @@
 python3 train.py -tr <path to training .csv> -te <path to testing .csv> -w <name of saved weightfile>
 ```
 
-# Data Format
+## Data Format
 Images should be listed in .csv files for training and testing, respectively. Each image should be given as a line:  
 ```
 <path to image>, <class>
