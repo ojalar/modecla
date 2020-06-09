@@ -8,7 +8,6 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 import sklearn.metrics as skmetrics
-import seaborn as sns
 
 from classification_dataset import ClassificationDataset
 
