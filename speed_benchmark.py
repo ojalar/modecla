@@ -91,7 +91,7 @@ def benchmark(video_path, weight_file):
             size = np.max((w,h))
             roi = np.zeros((size, size, 3), np.uint8)
 
-            roi[int((size-h)/2):int((size-h)/2)+h,int((size-w)/2):int((size-w)/2)+w] = orig_rgb[y:y+h,x:x+w] # this needs optimization!!!!
+            roi[int((size-h)/2):int((size-h)/2)+h,int((size-w)/2):int((size-w)/2)+w] = orig_rgb[y:y+h,x:x+w]
             roi = cv2.resize(roi, (48,48))
             roi = transform(roi)
 

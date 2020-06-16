@@ -6,7 +6,7 @@ from torchvision.models.resnet import resnet18
 import argparse
 import sys
 
-def detection(video_path, weight_file, visual):
+def detection(video_path, weight_file, visual, show_misc, threshold):
     # setup
     ##################
     net = resnet18(num_classes=3)
@@ -55,7 +55,7 @@ def detection(video_path, weight_file, visual):
         if warmup_counter < subtractor_warmup:
             warmup_counter += 1
             continue
-            
+
         # blur, threshold, erode, dilate
         fgmask_blur = cv2.GaussianBlur(fgmask,(5,5),0)
         thresh = cv2.threshold(fgmask_blur, 127, 256, cv2.THRESH_BINARY)[1]
@@ -110,21 +110,21 @@ def detection(video_path, weight_file, visual):
         print("FRAME -------------")
         if visual == True:
             for i in range(len(indices)):
-                if indices[i] == 1:
+                if indices[i] == 1 and values[i].item() >= threshold:
                     cv2.rectangle(orig, (boxes[i][0], boxes[i][1]), (boxes[i][0] + boxes[i][2], boxes[i][1] + boxes[i][3]), (255,255,0), 2)
                     cv2.putText(orig,"Person",(boxes[i][0]-5, boxes[i][1]-10), font, 0.65,(0,0,0),3,cv2.LINE_AA)
                     cv2.putText(orig,"Person",(boxes[i][0]-5, boxes[i][1]-10), font, 0.65,(255,255,255),1,cv2.LINE_AA)
                     object = ["Person", str(values[i].item()), str((boxes[i][0] + boxes[i][2]/2)/img_w),
                                 str((boxes[i][1] + boxes[i][3]/2)/img_h), str(boxes[i][2]/img_w), str(boxes[i][3]/img_h)]
                     print(" ".join(object))
-                elif indices[i] == 2:
+                elif indices[i] == 2 and values[i].item() >= threshold:
                     cv2.rectangle(orig, (boxes[i][0], boxes[i][1]), (boxes[i][0] + boxes[i][2], boxes[i][1] + boxes[i][3]), (0, 0, 255), 2)
                     cv2.putText(orig,"Car",(boxes[i][0]-5, boxes[i][1]-10), font, 0.65,(0,0,0),3,cv2.LINE_AA)
                     cv2.putText(orig,"Car",(boxes[i][0]-5, boxes[i][1]-10), font, 0.65,(255,255,255),1,cv2.LINE_AA)
                     object = ["Car", str(values[i].item()), str((boxes[i][0] + boxes[i][2]/2)/img_w),
                                 str((boxes[i][1] + boxes[i][3]/2)/img_h), str(boxes[i][2]/img_w), str(boxes[i][3]/img_h)]
                     print(" ".join(object))
-                else:
+                elif show_misc:
                     cv2.rectangle(orig, (boxes[i][0], boxes[i][1]), (boxes[i][0] + boxes[i][2], boxes[i][1] + boxes[i][3]), (255, 0, 0), 2)
                     cv2.putText(orig,"Misc",(boxes[i][0]-5, boxes[i][1]-10), font, 0.65,(0,0,0),3,cv2.LINE_AA)
                     cv2.putText(orig,"Misc",(boxes[i][0]-5, boxes[i][1]-10), font, 0.65,(255,255,255),1,cv2.LINE_AA)
@@ -134,20 +134,21 @@ def detection(video_path, weight_file, visual):
                 break
         else:
             for i in range(len(indices)):
-                if indices[i] == 1:
+                if indices[i] == 1 and values[i].item() >= threshold:
                     object = ["Person", str(values[i].item()), str((boxes[i][0] + boxes[i][2]/2)/img_w),
                                 str((boxes[i][1] + boxes[i][3]/2)/img_h), str(boxes[i][2]/img_w), str(boxes[i][3]/img_h)]
                     print(" ".join(object))
-                elif indices[i] == 2:
+                elif indices[i] == 2 and values[i].item() >= threshold:
                     object = ["Car", str(values[i].item()), str((boxes[i][0] + boxes[i][2]/2)/img_w),
                                 str((boxes[i][1] + boxes[i][3]/2)/img_h), str(boxes[i][2]/img_w), str(boxes[i][3]/img_h)]
                     print(" ".join(object))
 
-
 ap = argparse.ArgumentParser()
 ap.add_argument("-p", "--path", help="path to a video")
 ap.add_argument("-w", "--weights", help="weight file")
-ap.add_argument("-v", "--visual", help="enables visual output, 1 or 0")
+ap.add_argument("-v", "--visual", help="enables visual output, 1 or 0 (default is 1)")
+ap.add_argument("-sm", "--show_misc", help="show misc detections in visual output, 1 or 0 (default is 0)")
+ap.add_argument("-t", "--threshold", help="detection threshold, 0.33 to 1 (default is 0.5)")
 args = vars(ap.parse_args())
 
 if not args.get("path", False):
@@ -161,4 +162,14 @@ if not args.get("visual", False):
 else:
     visual = args.get("visual")
 
-detection(args.get("path"), args.get("weights"), visual)
+if not args.get("show_misc", False):
+    show_misc = False
+else:
+    show_misc = args.get("show_misc")
+
+if not args.get("threshold", False):
+    threshold = 0.5
+else:
+    threshold = float(args.get("threshold"))
+
+detection(args.get("path"), args.get("weights"), visual, show_misc, threshold)
