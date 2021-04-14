@@ -65,7 +65,7 @@ def detection(video_path, weight_file, visual, show_misc, threshold):
         # contours to bounding box proposals
         cnts = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL,
     		cv2.CHAIN_APPROX_SIMPLE)
-        cnts = cnts[1]
+        cnts = cnts[0]
 
         if len(cnts) == 0:
             continue
@@ -160,12 +160,12 @@ if not args.get("weights", False):
 if not args.get("visual", False):
     visual = True
 else:
-    visual = args.get("visual")
+    visual = bool(int(args.get("visual")))
 
 if not args.get("show_misc", False):
     show_misc = False
 else:
-    show_misc = args.get("show_misc")
+    show_misc = bool(int(args.get("show_misc")))
 
 if not args.get("threshold", False):
     threshold = 0.5
