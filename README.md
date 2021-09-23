@@ -1,3 +1,8 @@
+# Demo
+Here's a GIF demonstrating the detection results when running at 35 fps on a Jetson Nano (fps has been cut to reduce GIF size).
+
+![](https://github.com/ojalar/gifs/blob/main/modecla.gif)
+
 # Dependencies
 1. CUDA  
 
