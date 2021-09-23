@@ -1,5 +1,5 @@
 # Demo
-Here's a GIF demonstrating the detection results when running at 35 fps on a Jetson Nano (GIF has reduced fps for size limitations).
+Here's a GIF demonstrating the detection results when running at 35 fps on a Jetson Nano (GIF has reduced fps due to file size limitations).
 
 ![](https://github.com/ojalar/gifs/blob/main/modecla.gif)
 
